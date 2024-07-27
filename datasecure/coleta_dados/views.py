@@ -1,15 +1,13 @@
-# coleta_dados/views.py
-
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from .forms import DadosUsuarioForm
 
 def index(request):
     if request.method == 'POST':
-        nome = request.POST.get('nome')
-        email = request.POST.get('email')
-        telefone = request.POST.get('telefone')
-        consentimento = request.POST.get('consentimento')
-        if consentimento:
-            # Aqui você pode salvar os dados no banco de dados ou processá-los conforme necessário
-            return HttpResponse(f"Dados recebidos: Nome: {nome}, Email: {email}, Telefone: {telefone}")
-    return render(request, 'coleta_dados/index.html')
+        form = DadosUsuarioForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Dados recebidos e salvos com sucesso.")
+    else:
+        form = DadosUsuarioForm()
+    return render(request, 'coleta_dados/index.html', {'form': form})
